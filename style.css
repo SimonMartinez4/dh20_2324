@@ -1,0 +1,163 @@
+/* style.css */
+
+/* Background color for the app */
+body {
+    background-color: #BDBDBF;
+    color: #32435F;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Verdana', sans-serif;
+}
+
+.stApp {
+    background-color: #BDBDBF;
+    font-family: 'Verdana', sans-serif;
+    padding: 0;
+    margin: auto;
+}
+
+.full-width-header {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.full-width-header img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+}
+
+/* Background color for the sidebar */
+.css-1d391kg {
+    background-color: #32435F;
+    color: #FFFFFF;
+}
+
+/* Styling buttons */
+
+.stButton button, .stButton button div {
+    font-family: 'Verdana', sans-serif !important;
+    background-color: #32435F;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+}
+
+.stButton button:hover, .stButton button div:hover {
+    background-color: #CC8A4D;
+    color: #FFFFFF;
+    margin: 4px 2px;
+    padding: 2px 8px;
+}
+
+.stButton button:active, .stButton button div:active {
+    background-color: #CC8A4D;
+    color: #FFFFFF !important;
+    margin: 4px 2px;
+    padding: 2px 8px;
+    transform: scale(0.98) !important;
+}
+
+/* Styling selectbox */
+div[data-baseweb="select"] > div {
+    font-family: 'Verdana', sans-serif;
+    background-color: #BDBDBF;
+    color: #32435F;
+    padding: 1px 8px ;
+    font-size: 16px;
+    border: 2px solid #32435F;
+    border-radius: 3px;
+    margin: 1px 2px ;
+    cursor: pointer;
+    transition: border-color 0.4s;
+}
+
+div[data-baseweb="select"] > div:hover {
+    border-color: #CC8A4D;
+}
+
+div[data-baseweb="select"] > div:focus {
+    border-color: #CC8A4D;
+    box-shadow: 0 0 5px rgba(204, 138, 77, 0.5);
+}
+
+/* Styling markdown headers */
+.stMarkdown h1 {
+    color: #5580A0;
+    font-family: 'Verdana', sans-serif;
+}
+
+.stMarkdown h2 {
+    color: #CC8A4D;
+    font-family: 'Verdana', sans-serif;
+}
+
+.stMarkdown h3 {
+    color: #32435F;
+    font-family: 'Verdana', sans-serif;
+}
+
+/* Styling sidebar headers */
+.css-1d391kg h1 {
+    color: #FFFFFF;
+    font-family: 'Verdana', sans-serif;
+}
+
+.css-1d391kg h2 {
+    color: #CC8A4D;
+    font-family: 'Verdana', sans-serif;
+}
+
+.css-1d391kg h3 {
+    color: #5580A0;
+    font-family: 'Verdana', sans-serif;
+}
+
+/*Styling tables*/
+table {
+    font-family: 'Verdana', sans-serif;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #32435F;
+    color: #FFFFFF;
+    padding: 10px;
+    text-align: center !important;
+}
+
+th.row-header {
+    background-color: #32435F;
+    color: #FFFFFF;
+    padding: 10px;
+    text-align: center ! important;
+}
+
+td {
+    background-color: #FFFFFF;
+    color: #000000;
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: right !important;
+}
+
+table tbody tr:nth-child(even) td {
+    background-color: #f2f2f2;
+}
+
+table tbody tr:hover td {
+    background-color: #ddd;
+}

@@ -1,0 +1,18 @@
+# Environnement virtuel
+venv/
+st-env/
+
+# Fichiers de configuration IDE
+.vscode/
+.idea/
+
+# Fichiers de cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Fichiers de logs
+*.log
+
+# Fichiers de configuration de l'environnement
+.env
