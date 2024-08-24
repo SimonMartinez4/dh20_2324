@@ -245,7 +245,7 @@ def graph(player,season_type):
                             x=data_p['USG_PCT'],
                             y=data_p['TS_PCT'],
                             text=data_p['PLAYER_NAME'],
-                            textposition='top right',
+                            textposition='top left',
                             textfont=dict(
                                         size=18,
                                         color='black'
