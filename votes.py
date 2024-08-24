@@ -55,6 +55,7 @@ def run():
     if 'season_type' not in st.session_state:
         st.session_state.season_type = None
 
+    st.header("Votes DH20 2023-24")
     # Choix du joueur
     player_options = ["BAM", "BANCHERO", "BARNES", "BOOKER", "BRIDGES", "BROWN", "BRUNSON", "BUTLER", "CADE",
                       "CASON WALLACE", "CHET", "CURRY", "DAVIS", "DEMAR", "DONCIC", "DURANT", "EDWARDS", "EMBIID",
