@@ -70,6 +70,7 @@ def run():
     if player:
         vote_graph(player)
 
+    st.header("Efficacité")
     # Choix du type de saison
     season_type = st.selectbox('Saison Régulière / Playoffs', ["Regular Season", "Playoffs"], index=["Regular Season", "Playoffs"].index(st.session_state.season_type) if st.session_state.season_type else 0)
     st.session_state.season_type = season_type
