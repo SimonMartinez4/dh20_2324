@@ -6,10 +6,13 @@ import streamlit as st
 from nba_api.stats.endpoints import playerestimatedmetrics
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
+from nba_api.stats.endpoints import leaguedashplayerstats
 
 #Dataviz
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Other packages
 import re
@@ -47,11 +50,14 @@ def vote_graph(player):
     # Créer une figure et des axes
     fig, ax = plt.subplots(figsize=(12, 8))
 
+    fig.patch.set_alpha(0.0)  # Rendre le fond de la figure transparent
+    ax.set_facecolor('none')  # Rendre le fond des axes transparent
+
     # Créer un violon plot en excluant les membres de la rédaction
-    sns.violinplot(x='Editorial_Member', y=joueur, data=df_non_editorial, inner='quartile', color='lightgray', ax=ax, label="Communauté DH")
+    sns.violinplot(x='Editorial_Member', y=joueur, data=df_non_editorial, inner='quartile', color='skyblue', ax=ax, label="Communauté DH")
 
     # Ajouter un swarm plot pour les membres de la rédaction
-    sns.swarmplot(x='Editorial_Member', y=joueur, data=df_editorial, color='blue', ax=ax, label='Rédaction DH')
+    #sns.swarmplot(x='Editorial_Member', y=joueur, data=df_editorial, color='blue', ax=ax, label='Rédaction DH')
 
     # Ajouter une ligne pour la moyenne globale
     ax.axhline(y=moyenne_globale, color='red', linestyle='--', label='Moyenne Globale')
@@ -82,7 +88,7 @@ def vote_graph(player):
     # Ajouter une légende manuelle
     handles, labels = ax.get_legend_handles_labels()
     # Ajouter le handle du violin plot
-    handles.append(plt.Line2D([0], [0], color='lightgray', lw=4))
+    #handles.append(plt.Line2D([0], [0], color='lightgray', lw=4))
 
     ax.legend(handles=handles, labels=labels)
     ax.imshow(img, interpolation='nearest', extent=[-0.95, -0.5, 1, 5], aspect='auto', alpha=1)
@@ -97,6 +103,7 @@ def get_player_id(name) :
 
 # Fonction de chargement et transformation des données
 def load_transform_data(true_data):
+    pd.set_option('future.no_silent_downcasting', True)
     true_data_c=true_data.iloc[0:208, 1:-3]
     true_data_c.columns = range(1, 22)
     true_data_c['Votant']= range(1,209)
@@ -108,7 +115,7 @@ def load_transform_data(true_data):
     true_data_p["CHET"]=true_data_p["CHET"].fillna(true_data_p["HOLMGREN"])
     true_data_p["CHET"]=true_data_p["CHET"].fillna(true_data_p["HOLGREM"])
     true_data_p=true_data_p.drop(columns=["DE'AARON FOX","JAREN JACKSON JR","HOLMGREN","HOLGREM"])
-    true_data_f=true_data_p.fillna(22)
+    true_data_f=true_data_p.fillna(22).infer_objects(copy=False)
     true_data_f["Editorial_Member"]=False
     true_data_f["FOX"]=true_data_f["FOX"].astype(int)
     true_data_f["JJJ"]=true_data_f["JJJ"].astype(int)
@@ -149,3 +156,137 @@ def display_df(player):
         st.write(f"{name}:")
         st.table(df)  # Afficher les premières lignes du DataFrame
         st.write("\n")
+
+def advanced(season_type):
+    try :   
+        player_json = leaguedashplayerstats.LeagueDashPlayerStats(
+                measure_type_detailed_defense = "Advanced",
+                per_mode_detailed = "PerGame",
+                season = "2023-24",
+                season_type_all_star = season_type
+                )
+        player_data = json.loads(player_json.get_json())
+        relevant_data = player_data['resultSets'][0]
+        headers = relevant_data['headers']
+        rows = relevant_data['rowSet']
+        data = pd.DataFrame(rows)
+        data.columns = headers
+        a_data = data[['PLAYER_ID','PLAYER_NAME','GP','MIN','TS_PCT','USG_PCT']]
+    except Exception as e :
+        a_data=None
+    return a_data
+
+def scoring(season_type):
+    try:
+        player_json = leaguedashplayerstats.LeagueDashPlayerStats(
+                measure_type_detailed_defense = "Scoring",
+                per_mode_detailed = "PerGame",
+                season = "2023-24",
+                season_type_all_star = season_type
+                )
+        player_data = json.loads(player_json.get_json())
+        relevant_data = player_data['resultSets'][0]
+        headers = relevant_data['headers']
+        rows = relevant_data['rowSet']
+        data = pd.DataFrame(rows)
+        data.columns = headers
+        s_data=data[['PLAYER_ID','PCT_AST_FGM']]
+    except Exception as e:
+        s_data=None
+    return s_data
+
+def stats(season_type):
+    try:
+        a_data=advanced(season_type)
+        s_data=scoring(season_type)
+        data = pd.merge(a_data,s_data, on='PLAYER_ID', how='left')
+    except Exception as e :
+        data=None
+    return data
+
+def graph(player,season_type):
+    player_id=get_player_id(player)
+    data=stats(season_type)
+    if player_id in data['PLAYER_ID'].values :
+        # Ajouter les sliders pour filtrer les données
+        min_minutes = st.slider("Minutes Jouées Minimum", min_value=0, max_value=int(data['MIN'].max()), value=20)
+        min_games = st.slider("Matchs Joués Minimum", min_value=0, max_value=int(data['GP'].max()), value=0)
+        min_ast_pct = st.slider("Pourcentage de Tirs Assistés Maximum", min_value=0.0, max_value=100.0, value=50.0)
+
+        # Filtrer les données selon les valeurs sélectionnées par les sliders
+        filtered_data = data[
+            (data['MIN'] >= min_minutes) &
+            (data['GP'] >= min_games) &
+            (data['PCT_AST_FGM'] <= min_ast_pct / 100)
+        ]
+
+        if player_id in data['PLAYER_ID'].values:
+            data_f = filtered_data[filtered_data['PLAYER_ID'] != player_id].reset_index(drop=True)
+            data_p = filtered_data[filtered_data['PLAYER_ID'] == player_id].reset_index(drop=True)
+
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(
+                            x=data_f['USG_PCT'],
+                            y=data_f['TS_PCT'],
+                            hovertext= data_f[['PLAYER_NAME', 'TS_PCT', 'USG_PCT', 'PCT_AST_FGM']].apply(
+                                lambda row: f'{row["PLAYER_NAME"]} => True Shooting :{round(row["TS_PCT"]*100,2)} % - Usage Rate : {round(row["USG_PCT"]*100,2)} % - Assisted Field Goals : {round(row["PCT_AST_FGM"]*100,2)} %',
+                                axis=1
+                                ),
+                            hoverinfo='text',
+                            mode='markers',
+                            marker=dict(
+                                        size=5,
+                                        color='red'
+                                        )
+                            #text='PLAYER_NAME',
+            ))
+
+            fig.add_trace(go.Scatter(
+                            x=data_p['USG_PCT'],
+                            y=data_p['TS_PCT'],
+                            text=data_p['PLAYER_NAME'],
+                            textposition='top right',
+                            textfont=dict(
+                                        size=18,
+                                        color='black'
+                                        ),
+                            hovertext= data_p[['PLAYER_NAME', 'TS_PCT', 'USG_PCT', 'PCT_AST_FGM']].apply(
+                                lambda row: f'{row["PLAYER_NAME"]} => True Shooting :{round(row["TS_PCT"]*100,2)} % - Usage Rate : {round(row["USG_PCT"]*100,2)} % - Assisted Field Goals : {round(row["PCT_AST_FGM"]*100,2)} %',
+                                axis=1
+                                ),
+                            hoverinfo='text',
+                            mode='markers+text',
+                            marker=dict(
+                                        size=10,
+                                        color='black'
+                                        )
+            ))
+
+
+
+            # Mise à jour des axes et des grilles
+            fig.update_xaxes(
+                title="Usage Percentage (USG%)",
+                showgrid=True,  # Afficher la grille
+                gridcolor='black',  # Couleur de la grille en noir
+                titlefont=dict(color='black'),  # Titre de l'axe en noir
+                tickfont=dict(color='black')  # Étiquettes de l'axe en noir
+            )
+
+            fig.update_yaxes(
+                title="True Shooting Percentage (TS%)",
+                showgrid=True,  # Afficher la grille
+                gridcolor='black',  # Couleur de la grille en noir
+                titlefont=dict(color='black'),  # Titre de l'axe en noir
+                tickfont=dict(color='black')  # Étiquettes de l'axe en noir
+            )
+
+
+            fig.update_layout(
+                showlegend=False,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',)
+
+            return st.plotly_chart(fig, use_container_width=True)
+    else :
+        return st.write(f"{player} didn't play any {season_type} game in 2023-24")
