@@ -23,7 +23,7 @@ from functions import ddiff_graph
 from functions import reb_graph
 from functions import custom_graph
 
-st.cache_data
+#st.cache_data
 
 def run():
     # Initialisation des variables de session si elles n'existent pas
