@@ -2,28 +2,8 @@
 
 import streamlit as st
 
-# NBA api endpoints
-from nba_api.stats.endpoints import playerestimatedmetrics
-from nba_api.stats.static import players
-from nba_api.stats.endpoints import playercareerstats
-from nba_api.stats.endpoints import leaguedashplayerstats
-
-#Dataviz
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
 # Other packages
-import re
-import json
-import numpy as np
 import pandas as pd
-import matplotlib.image as mpimg
-
-# Pandas config
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
 
 # Import xlsx data
 true_data=pd.read_excel('./src/data_dh20.xlsx', sheet_name='Réponses individuelles')

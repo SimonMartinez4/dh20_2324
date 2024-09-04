@@ -3,12 +3,8 @@
 import streamlit as st
 
 # NBA api endpoints
-from nba_api.stats.endpoints import playerestimatedmetrics
-from nba_api.stats.static import players
-from nba_api.stats.endpoints import playercareerstats
 from nba_api.stats.endpoints import leaguedashplayerstats
 from nba_api.stats.endpoints import leaguehustlestatsplayer
-from nba_api.stats.endpoints import playerdashptreb
 from nba_api.stats.endpoints import leaguedashptdefend
 from nba_api.stats.endpoints import leaguedashptstats
 
