@@ -4,11 +4,6 @@ import streamlit as st
 
 # Other packages
 import pandas as pd
-import matplotlib.image as mpimg
-
-# Pandas config
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
 
 # Import xlsx data
 true_data=pd.read_excel('./src/data_dh20.xlsx', sheet_name='Réponses individuelles')
@@ -79,7 +74,7 @@ def run():
                           'LOOSE_BALLS_RECOVERED','PCT_LOOSE_BALLS_RECOVERED_OFF', 'PCT_LOOSE_BALLS_RECOVERED_DEF',
                           'OFF_BOXOUTS', 'DEF_BOXOUTS', 'BOX_OUTS', 'BOX_OUT_PLAYER_TEAM_REBS','BOX_OUT_PLAYER_REBS',
                           'PCT_BOX_OUTS_OFF', 'PCT_BOX_OUTS_DEF','PCT_BOX_OUTS_TEAM_REB', 'PCT_BOX_OUTS_REB']
-            stat_choice = st.selectbox('Rubrique statistique', stat_options, index=stat_options.index(st.session_state.stat_choice) if st.session_state.stat_choice else 0)
+            stat_choice = st.selectbox('Rubrique statistique', stat_options)
             custom_graph(player,season_type,stat_choice)
 
         except TypeError:
