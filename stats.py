@@ -5,9 +5,6 @@ import streamlit as st
 # Other packages
 import pandas as pd
 import matplotlib.image as mpimg
-import requests
-from PIL import Image
-from io import BytesIO
 
 # Pandas config
 pd.set_option('display.max_columns', None)
@@ -29,7 +26,6 @@ from functions import ast_graph
 from functions import ddiff_graph
 from functions import reb_graph
 from functions import custom_graph
-from functions import get_url_img
 
 st.cache_data
 
@@ -63,15 +59,9 @@ def run():
             piescore, rankpie = pie(player,season_type)
             col1, col2 = st.columns(2)
             with col1:
-                url=get_url_img(player)
-                response = requests.get(url)
-                response.raise_for_status()
-                image = Image.open(BytesIO(response.content))
-                st.image(image, use_column_width=True)
-                st.write("")
+                st.metric(label= "Player Impact Estimate", value=piescore)
                 
             with col2:
-                st.metric(label= "Player Impact Estimate", value=piescore)
                 st.metric(label= "PIE Rank", value=rankpie)
             
             polar(player, season_type)

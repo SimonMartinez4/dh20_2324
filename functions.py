@@ -16,11 +16,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # Other packages
-import re
 import json
-import numpy as np
 import pandas as pd
-import matplotlib.image as mpimg
+
 
 # Pandas config
 pd.set_option('display.max_columns', None)
@@ -648,8 +646,3 @@ def custom_graph(player,season_type,y):
     
     else :
         return st.write(f"{player} didn't play any {season_type} game in 2023-24")
-
-def get_url_img(player):
-    player_id = get_player_id(player)
-    player_url=f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
-    return player_url
