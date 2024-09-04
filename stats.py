@@ -76,11 +76,12 @@ def run():
             piescore, rankpie = pie(player,season_type)
             col1, col2 = st.columns(2)
             with col1:
-                url=get_url_img(player)
-                response = requests.get(url)
-                response.raise_for_status()
-                image = Image.open(BytesIO(response.content))
-                st.image(image, use_column_width=True)
+                #url=get_url_img(player)
+                #response = requests.get(url)
+                #response.raise_for_status()
+                #image = Image.open(BytesIO(response.content))
+                #st.image(image, use_column_width=True)
+                st.write("")
                 
             with col2:
                 st.metric(label= "Player Impact Estimate", value=piescore)
