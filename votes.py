@@ -50,7 +50,7 @@ def run():
                       "MAXEY", "MITCHELL", "MORANT", "MURRAY", "PORZINGIS", "RANDLE", "SABONIS", "SENGUN", "SGA",
                       "SIAKAM", "TATUM", "TOWNS", "VICTOR", "WESTBROOK", "WHITE", "YOUNG", "ZION"]
 
-    player = st.selectbox('Joueur', player_options, index=player_options)
+    player = st.selectbox('Joueur', player_options)
     #st.session_state.player = player
 
     # Mise à jour et affichage du graphique des votes dès que le joueur est sélectionné
