@@ -31,6 +31,8 @@ from functions import reb_graph
 from functions import custom_graph
 from functions import get_url_img
 
+st.cache_data
+
 def run():
     # Initialisation des variables de session si elles n'existent pas
     if 'player' not in st.session_state:

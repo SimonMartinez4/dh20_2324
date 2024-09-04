@@ -12,7 +12,7 @@ ids=pd.read_excel('./src/dh20_ids.xlsx',sheet_name='Feuil1')
 # Import functions
 from functions import vote_graph
 
-#st.cache_data
+st.cache_data
 
 def run():
     # Initialisation des variables de session si elles n'existent pas
