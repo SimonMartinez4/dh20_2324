@@ -2,6 +2,7 @@
 
 import streamlit as st
 from google.cloud import bigquery
+import os
 
 # NBA api endpoints
 from nba_api.stats.endpoints import leaguedashplayerstats
@@ -31,6 +32,10 @@ ids=pd.read_excel('./src/dh20_ids.xlsx',sheet_name='Feuil1')
 
 # Initialize BigQuery client
 client = bigquery.Client(project='dh-20-stats')
+
+google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if google_credentials_path:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_credentials_path
 
 # func to draw a dh20 vote graph
 def vote_graph(player):
