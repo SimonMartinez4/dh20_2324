@@ -40,7 +40,7 @@ elif page == pages[1]:
     stats.run()
 elif page == pages[2]:
     glossary.run()
-elif page == page[3]:
+elif page == pages[3]:
     test_db.run()
 
 st.sidebar.markdown("---")
