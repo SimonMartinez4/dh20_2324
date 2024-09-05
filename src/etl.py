@@ -1,8 +1,6 @@
 # import packages
 import sqlite3
 import pandas as pd
-import requests
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # NBA api endpoints
 from nba_api.stats.endpoints import leaguedashplayerstats

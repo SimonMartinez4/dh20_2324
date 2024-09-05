@@ -125,9 +125,9 @@ def advanced_d(season_type):
 
 # func to extract advanced stats from db
 def advanced(season_type, db_path='dh20_stats.db'):
-    conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(db_path)
     
-    try:
+    #try:
         suff= "reg" if season_type== "Regular Season" else "po"
         query = f"""
         SELECT PLAYER_ID, PLAYER_NAME, GP, MIN, TS_PCT, USG_PCT, AST_RATIO, PIE
@@ -137,11 +137,11 @@ def advanced(season_type, db_path='dh20_stats.db'):
         
         return data
     
-    except Exception as e:
-        st.write(f"Erreur lors de l'extraction des données : {e}")
-        return None
+    #except Exception as e:
+    #    st.write(f"Erreur lors de l'extraction des données : {e}")
+    #    return None
     
-    finally:
+        #finally:
         conn.close()
 
 def scoring_d(season_type):
