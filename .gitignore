@@ -16,3 +16,6 @@ __pycache__/
 
 # Fichiers de configuration de l'environnement
 .env
+
+# Fichier json de credentials
+.json
