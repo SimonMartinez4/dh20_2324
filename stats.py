@@ -46,7 +46,7 @@ def run():
 
     if player and season_type :
 
-        try:
+        #try:
             piescore, rankpie = pie(player,season_type)
             col1, col2 = st.columns(2)
             with col1:
@@ -77,7 +77,7 @@ def run():
             #stat_choice = st.selectbox('Rubrique statistique', stat_options)
             #custom_graph(player,season_type,stat_choice)
 
-        except TypeError:
-            st.error(f"{player} n'a pas joué en {season_type} en 2023-2024.")
+        #except TypeError:
+        #    st.error(f"{player} n'a pas joué en {season_type} en 2023-2024.")
 
         
