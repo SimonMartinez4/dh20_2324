@@ -8,7 +8,7 @@ import pandas as pd
 
 # Import xlsx data
 true_data=pd.read_excel('./src/data_dh20.xlsx', sheet_name='Réponses individuelles')
-ids=pd.read_excel('./src/dh20_ids.xlsx',sheet_name='Feuil1')
+#ids=pd.read_excel('./src/dh20_ids.xlsx',sheet_name='Feuil1')
 
 # Import functions
 from functions import polar
