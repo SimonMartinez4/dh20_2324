@@ -10,7 +10,7 @@ from nba_api.stats.endpoints import leaguedashptstats
 
 # extract xls
 def extract_xls():
-    ids = pd.read_excel('dh20_ids.xlsx', sheet_name='Feuil1')
+    ids = pd.read_excel('src/dh20_ids.xlsx', sheet_name='Feuil1')
     return ids
 
 # transform 'player_id' in list
