@@ -12,6 +12,7 @@ import streamlit as st
 import votes
 import stats
 import glossary
+import test_db
 
 def basketball_theme():
     st.set_page_config(
@@ -31,7 +32,7 @@ def local_css(file_name):
 local_css("style.css")
 
 st.sidebar.markdown("DH20")
-pages = ["**Votes 2023-24**","**Stats DH20 2023-24**","**Glossaire**"]
+pages = ["**Votes 2023-24**","**Stats DH20 2023-24**","**Glossaire**, **Test DB**"]
 page = st.sidebar.radio("Menu", pages)
 if page == pages[0]:
     votes.run()
@@ -39,6 +40,8 @@ elif page == pages[1]:
     stats.run()
 elif page == pages[2]:
     glossary.run()
+elif page == page[3]:
+    test_db.run()
 
 st.sidebar.markdown("---")
 

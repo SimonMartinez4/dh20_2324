@@ -763,3 +763,10 @@ def custom_graph(player,season_type,y):
     
     else :
         return st.write(f"{player} didn't play any {season_type} game in 2023-24")
+
+def check_tables():
+    conn = sqlite3.connect('dh20_stats.db')  # Remplacez par le chemin de votre base de données
+    query = 'SELECT name FROM sqlite_master WHERE type="table";'
+    tables = conn.execute(query).fetchall()
+    conn.close()
+    st.write("Tables présentes :", tables)
