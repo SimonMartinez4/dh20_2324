@@ -124,7 +124,7 @@ def advanced_d(season_type):
         return a_data
 
 # func to extract advanced stats from db
-def advanced(season_type, db_path='.\src\dh20_stats.db'):
+def advanced(season_type, db_path='dh20_stats.db'):
     conn = sqlite3.connect(db_path)
     
     try:
