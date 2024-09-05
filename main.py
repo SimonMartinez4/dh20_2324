@@ -32,7 +32,7 @@ def local_css(file_name):
 local_css("style.css")
 
 st.sidebar.markdown("DH20")
-pages = ["**Votes 2023-24**","**Stats DH20 2023-24**","**Glossaire**", "**Test DB**"]
+pages = ["**Votes 2023-24**","**Stats DH20 2023-24**","**Glossaire**"]
 page = st.sidebar.radio("Menu", pages)
 if page == pages[0]:
     votes.run()
@@ -40,8 +40,6 @@ elif page == pages[1]:
     stats.run()
 elif page == pages[2]:
     glossary.run()
-elif page == pages[3]:
-    test_db.run()
 
 st.sidebar.markdown("---")
 

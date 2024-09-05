@@ -124,140 +124,97 @@ def advanced_d(season_type):
         return a_data
 
 # func to extract advanced stats from db
-def advanced(season_type, db_path='dh20_stats.db'):
-        conn = sqlite3.connect(db_path)
+def advanced(season_type):
     
-    #try:
-        suff= "reg" if season_type== "Regular Season" else "po"
-        query = f"""
-        SELECT PLAYER_ID, PLAYER_NAME, GP, MIN, TS_PCT, USG_PCT, AST_RATIO, PIE
-        FROM adv_stats_{suff}
-        """
-        data = pd.read_sql_query(query, conn)
-        
+
+    suff= "reg" if season_type== "Regular Season" else "po"
+
+    # Define the dataset and table names
+    dataset_id = 'dh_20_stats'
+    table_name = f'adv_stats_{suff}'
+
+    query = f"""
+    SELECT PLAYER_ID, PLAYER_NAME, GP, MIN, TS_PCT, USG_PCT, AST_RATIO, PIE
+    FROM '{dataset_id}.{table_name}
+    """
+
+    try:
+        query_job = client.query(query)
+        data = query_job.result().to_dataframe()
         return data
     
-    #except Exception as e:
-    #    st.write(f"Erreur lors de l'extraction des données : {e}")
-    #    return None
-    
-        #finally:
-        conn.close()
-
-def scoring_d(season_type):
-        player_json = leaguedashplayerstats.LeagueDashPlayerStats(
-                measure_type_detailed_defense = "Scoring",
-                per_mode_detailed = "PerGame",
-                season = "2023-24",
-                season_type_all_star = season_type
-                )
-        player_data = json.loads(player_json.get_json())
-        relevant_data = player_data['resultSets'][0]
-        headers = relevant_data['headers']
-        rows = relevant_data['rowSet']
-        data = pd.DataFrame(rows)
-        data.columns = headers
-        s_data=data[['PLAYER_ID','PCT_AST_FGM']]
-        return s_data
+    except Exception as e:
+        st.write(f"Erreur lors de l'extraction des données : {e}")
+        return None
 
 # func to extract scoring stats from db
-def scoring(season_type, db_path='.\src\dh20_stats.db'):
-    conn = sqlite3.connect(db_path)
-    
+def scoring(season_type):
+
+    suff= "reg" if season_type== "Regular Season" else "po"
+
+    # Define the dataset and table names
+    dataset_id = 'dh_20_stats'
+    table_name = f'scor_stats_{suff}'
+
+    query = f"""
+    SELECT PLAYER_ID, PCT_AST_FGM
+    FROM '{dataset_id}.{table_name}
+    """
+
     try:
-        suff= "reg" if season_type== "Regular Season" else "po"
-        query = f"""
-        SELECT PLAYER_ID, PCT_AST_FGM
-        FROM scor_stats_{suff}
-        """
-        data = pd.read_sql_query(query, conn)
-        
+        query_job = client.query(query)
+        data = query_job.result().to_dataframe()
         return data
     
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
-    
-    finally:
-        conn.close()
-
-def shotdef_d(season_type):
-        player_json = leaguedashptdefend.LeagueDashPtDefend(
-                defense_category = "Overall",
-                league_id = "00",
-                per_mode_simple = "PerGame",
-                season = "2023-24",
-                season_type_all_star = season_type,
-                )
-        player_data = json.loads(player_json.get_json())
-        relevant_data = player_data['resultSets'][0]
-        headers = relevant_data['headers']
-        rows = relevant_data['rowSet']
-        data = pd.DataFrame(rows)
-        data.columns = headers
-        d_data=data[['CLOSE_DEF_PERSON_ID','PCT_PLUSMINUS']]
-        d_data=d_data.rename(columns={'CLOSE_DEF_PERSON_ID':"PLAYER_ID"})
-        return d_data
 
 # func to extract shot defensive efficiency stats from db
-def shotdef(season_type, db_path='.\src\dh20_stats.db'):
-    conn = sqlite3.connect(db_path)
-    
+def shotdef(season_type):
+
+    suff= "reg" if season_type== "Regular Season" else "po"
+
+    # Define the dataset and table names
+    dataset_id = 'dh_20_stats'
+    table_name = f'shot_def_{suff}'
+
+    query = f"""
+    SELECT CLOSE_DEF_PERSON_ID, PCT_PLUSMINUS
+    FROM '{dataset_id}.{table_name}
+    """
+
     try:
-        suff= "reg" if season_type== "Regular Season" else "po"
-        query = f"""
-        SELECT CLOSE_DEF_PERSON_ID, PCT_PLUSMINUS
-        FROM shot_def_{suff}
-        """
-        data = pd.read_sql_query(query, conn)
+        query_job = client.query(query)
+        data = query_job.result().to_dataframe()
         data=data.rename(columns={'CLOSE_DEF_PERSON_ID':"PLAYER_ID"})
-        
         return data
-    
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
-    
-    finally:
-        conn.close()
-
-def reb_d(season_type):
-        player_json = leaguedashptstats.LeagueDashPtStats(
-                player_or_team = "Player",
-                pt_measure_type = "Rebounding",
-                per_mode_simple = "PerGame",
-                season = "2023-24",
-                season_type_all_star = season_type,
-                )
-        player_data = json.loads(player_json.get_json())
-        relevant_data = player_data['resultSets'][0]
-        headers = relevant_data['headers']
-        rows = relevant_data['rowSet']
-        data = pd.DataFrame(rows)
-        data.columns = headers
-        r_data=data[['PLAYER_ID','REB_CHANCE_PCT_ADJ']]
-        return r_data
 
 # func to extract rebound stats from db
-def reb(season_type, db_path='.\src\dh20_stats.db'):
-    conn = sqlite3.connect(db_path)
-    
+def reb(season_type):
+
+    suff= "reg" if season_type== "Regular Season" else "po"
+
+    # Define the dataset and table names
+    dataset_id = 'dh_20_stats'
+    table_name = f'reb_{suff}'
+
+    query = f"""
+    SELECT PLAYER_ID, REB_CHANCE_PCT_ADJ
+    FROM '{dataset_id}.{table_name}
+    """
+
     try:
-        suff= "reg" if season_type== "Regular Season" else "po"
-        query = f"""
-        SELECT PLAYER_ID, REB_CHANCE_PCT_ADJ
-        FROM reb_{suff}
-        """
-        data = pd.read_sql_query(query, conn)
-        
+        query_job = client.query(query)
+        data = query_job.result().to_dataframe()
         return data
-    
+
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
-    
-    finally:
-        conn.close()
 
 # func to agregate advanced key stats
 def keystats(season_type):
@@ -587,77 +544,53 @@ def reb_graph(player, season_type):
     else :
         return st.write(f"{player} didn't play any playoffs game in 2023-24")
 
-def base_d(season_type):
-    player_json = leaguedashplayerstats.LeagueDashPlayerStats(
-            per_mode_detailed = "PerGame",
-            season = "2023-24",
-            season_type_all_star = season_type,
-            )
-    player_data = json.loads(player_json.get_json())
-    relevant_data = player_data['resultSets'][0]
-    headers = relevant_data['headers']
-    rows = relevant_data['rowSet']
-    data = pd.DataFrame(rows)
-    data.columns = headers
-    data=data.iloc[:,:32]
-    return data
-
 # extracting base stats from db
-def base(season_type, db_path='.\src\dh20_stats.db'):
-    conn = sqlite3.connect(db_path)
-    
-    try:
-        suff= "reg" if season_type== "Regular Season" else "po"
-        query = f"""
-        SELECT *
-        FROM base_stats_{suff}
-        """
-        data = pd.read_sql_query(query, conn)
-        data=data.iloc[:,:32]
+def base(season_type):
 
+    suff= "reg" if season_type== "Regular Season" else "po"
+
+    # Define the dataset and table names
+    dataset_id = 'dh_20_stats'
+    table_name = f'base_stats_{suff}'
+
+    query = f"""
+    SELECT *
+    FROM '{dataset_id}.{table_name}
+    """
+
+    try:
+        query_job = client.query(query)
+        data = query_job.result().to_dataframe()
+        data=data.iloc[:,:32]
         return data
-    
+
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
-    
-    finally:
-        conn.close()
-
-def hustle_d(season_type):
-    player_json = leaguehustlestatsplayer.LeagueHustleStatsPlayer(
-            per_mode_time = "PerGame",
-            season = "2023-24",
-            season_type_all_star = season_type,
-            )
-    player_data = json.loads(player_json.get_json())
-    relevant_data = player_data['resultSets'][0]
-    headers = relevant_data['headers']
-    rows = relevant_data['rowSet']
-    data = pd.DataFrame(rows)
-    data.columns = headers
-    return data
 
 # extracting hustle stats from db
-def hustle(season_type, db_path='.\src\dh20_stats.db'):
-    conn = sqlite3.connect(db_path)
-    
+def base(season_type):
+
+    suff= "reg" if season_type== "Regular Season" else "po"
+
+    # Define the dataset and table names
+    dataset_id = 'dh_20_stats'
+    table_name = f'hus_stats_{suff}'
+
+    query = f"""
+    SELECT *
+    FROM '{dataset_id}.{table_name}
+    """
+
     try:
-        suff= "reg" if season_type== "Regular Season" else "po"
-        query = f"""
-        SELECT *
-        FROM hus_stats_{suff}
-        """
-        data = pd.read_sql_query(query, conn)
+        query_job = client.query(query)
+        data = query_job.result().to_dataframe()
 
         return data
-    
+
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
-    
-    finally:
-        conn.close()
 
 # func merging base stats and hustle stats
 def allstats(season_type):
@@ -763,18 +696,3 @@ def custom_graph(player,season_type,y):
     
     else :
         return st.write(f"{player} didn't play any {season_type} game in 2023-24")
-
-def check_tables():
-    conn = sqlite3.connect('dh20_stats.db')
-    query = 'SELECT name FROM sqlite_master WHERE type="table";'
-    tables = conn.execute(query).fetchall()
-    conn.close()
-    st.write("Tables présentes :", tables)
-
-def test_db_connection():
-    try:
-        conn = sqlite3.connect('dh20_stats.db')
-        st.write("Connexion réussie")
-        conn.close()
-    except Exception as e:
-        st.write("Erreur de connexion :", e)

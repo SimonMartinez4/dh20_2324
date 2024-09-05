@@ -1,6 +1,7 @@
 ## Import packages
 
 import streamlit as st
+from google.cloud import bigquery
 
 # Other packages
 import pandas as pd
@@ -17,6 +18,9 @@ from functions import ast_graph
 from functions import ddiff_graph
 from functions import reb_graph
 from functions import custom_graph
+
+# Initialize BigQuery client
+client = bigquery.Client(project='dh-20-stats')
 
 #st.cache_data
 
