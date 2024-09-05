@@ -569,7 +569,7 @@ def base(season_type):
         return None
 
 # extracting hustle stats from db
-def base(season_type):
+def hustle(season_type):
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
