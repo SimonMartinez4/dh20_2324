@@ -260,10 +260,13 @@ def polar(player, season_type):
 def pie(player, season_type):
     df=keystats(season_type)
     player_id=get_player_id(player)
-    df_player=df.loc[df["PLAYER_ID"]==player_id,['PLAYER_NAME','PIE','Rank PIE']].reset_index(drop=True)
-    pie=round(df_player.loc[0,"PIE"]*100,2)
-    rankpie=round(df_player.loc[0,"Rank PIE"],0)
-    return pie, rankpie
+    if player_id in data['PLAYER_ID'].values :
+        df_player=df.loc[df["PLAYER_ID"]==player_id,['PLAYER_NAME','PIE','Rank PIE']].reset_index(drop=True)
+        pie=round(df_player.loc[0,"PIE"]*100,2)
+        rankpie=round(df_player.loc[0,"Rank PIE"],0)
+        return pie, rankpie
+    else:
+        return st.write(f"{player} didn't play any {season_type} game in 2023-24")
 
 
 def eff_graph(player,season_type):
