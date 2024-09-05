@@ -770,3 +770,11 @@ def check_tables():
     tables = conn.execute(query).fetchall()
     conn.close()
     st.write("Tables présentes :", tables)
+
+def test_db_connection():
+    try:
+        conn = sqlite3.connect('database.db')
+        st.write("Connexion réussie")
+        conn.close()
+    except Exception as e:
+        st.write("Erreur de connexion :", e)
