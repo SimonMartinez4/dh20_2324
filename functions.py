@@ -773,7 +773,7 @@ def check_tables():
 
 def test_db_connection():
     try:
-        conn = sqlite3.connect('database.db')
+        conn = sqlite3.connect('dh20_stats.db')
         st.write("Connexion réussie")
         conn.close()
     except Exception as e:
