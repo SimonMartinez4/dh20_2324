@@ -12,7 +12,6 @@ import streamlit as st
 import votes
 import stats
 import glossary
-import test_db
 
 def basketball_theme():
     st.set_page_config(

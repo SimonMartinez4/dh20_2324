@@ -1,7 +1,7 @@
 ## Import packages
 
 import streamlit as st
-import sqlite3
+from google.cloud import bigquery
 
 # NBA api endpoints
 from nba_api.stats.endpoints import leaguedashplayerstats
@@ -28,6 +28,9 @@ pd.set_option('display.max_rows', None)
 # Import xlsx data
 true_data=pd.read_excel('./src/data_dh20.xlsx', sheet_name='Réponses individuelles')
 ids=pd.read_excel('./src/dh20_ids.xlsx',sheet_name='Feuil1')
+
+# Initialize BigQuery client
+client = bigquery.Client(project='dh-20-stats')
 
 # func to draw a dh20 vote graph
 def vote_graph(player):
@@ -107,25 +110,8 @@ def load_transform_data(true_data):
     true_data_f["CHET"]=true_data_f["CHET"].astype(int)
     return true_data_f
 
-def advanced_d(season_type):
-        player_json = leaguedashplayerstats.LeagueDashPlayerStats(
-                measure_type_detailed_defense = "Advanced",
-                per_mode_detailed = "PerGame",
-                season = "2023-24",
-                season_type_all_star = season_type
-                )
-        player_data = json.loads(player_json.get_json())
-        relevant_data = player_data['resultSets'][0]
-        headers = relevant_data['headers']
-        rows = relevant_data['rowSet']
-        data = pd.DataFrame(rows)
-        data.columns = headers
-        a_data = data[['PLAYER_ID','PLAYER_NAME','GP','MIN','TS_PCT','USG_PCT','AST_RATIO','PIE',]]
-        return a_data
-
 # func to extract advanced stats from db
 def advanced(season_type):
-    
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
@@ -135,7 +121,7 @@ def advanced(season_type):
 
     query = f"""
     SELECT PLAYER_ID, PLAYER_NAME, GP, MIN, TS_PCT, USG_PCT, AST_RATIO, PIE
-    FROM '{dataset_id}.{table_name}
+    FROM `{dataset_id}.{table_name}`
     """
 
     try:
@@ -158,7 +144,7 @@ def scoring(season_type):
 
     query = f"""
     SELECT PLAYER_ID, PCT_AST_FGM
-    FROM '{dataset_id}.{table_name}
+    FROM `{dataset_id}.{table_name}`
     """
 
     try:
@@ -181,7 +167,7 @@ def shotdef(season_type):
 
     query = f"""
     SELECT CLOSE_DEF_PERSON_ID, PCT_PLUSMINUS
-    FROM '{dataset_id}.{table_name}
+    FROM `{dataset_id}.{table_name}`
     """
 
     try:
@@ -204,7 +190,7 @@ def reb(season_type):
 
     query = f"""
     SELECT PLAYER_ID, REB_CHANCE_PCT_ADJ
-    FROM '{dataset_id}.{table_name}
+    FROM `{dataset_id}.{table_name}`
     """
 
     try:
@@ -555,7 +541,7 @@ def base(season_type):
 
     query = f"""
     SELECT *
-    FROM '{dataset_id}.{table_name}
+    FROM `{dataset_id}.{table_name}`
     """
 
     try:
@@ -579,7 +565,7 @@ def hustle(season_type):
 
     query = f"""
     SELECT *
-    FROM '{dataset_id}.{table_name}
+    FROM `{dataset_id}.{table_name}`
     """
 
     try:
