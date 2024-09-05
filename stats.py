@@ -21,17 +21,17 @@ from functions import custom_graph
 #st.cache_data
 
 def run():
-    # Initialisation des variables de session si elles n'existent pas
+    # sesson variables init
     if 'player' not in st.session_state:
         st.session_state.player = None
     if 'season_type' not in st.session_state:
         st.session_state.season_type = None
-    #if 'stat_choice' not in st.session_state:
-    #    st.session_state.stat_choice = None
+    if 'stat_choice' not in st.session_state:
+        st.session_state.stat_choice = None
 
     st.header("Stats DH20 2023-24")
 
-    # Choix du joueur
+    # Selectboxes for players and season_type
     player_options = ["BOOKER", "BROWN", "BRUNSON", "BUTLER",
                       "CURRY", "DAVIS", "DONCIC", "DURANT", "EDWARDS", "EMBIID",
                       "GIANNIS", "HALIBURTON",
@@ -44,16 +44,17 @@ def run():
 
     st.write("")
 
+    # drawing graphs with selections
     if player and season_type :
 
-        #try:
+        try:
             piescore, rankpie = pie(player,season_type)
             col1, col2 = st.columns(2)
             with col1:
-                st.metric(label= "Player Impact Estimate", value=piescore)
+                    st.metric(label= "Player Impact Estimate", value=piescore)
                 
             with col2:
-                st.metric(label= "PIE Rank", value=rankpie)
+                    st.metric(label= "PIE Rank", value=rankpie)
             
             polar(player, season_type)
             
@@ -66,18 +67,19 @@ def run():
             st.header("Efficacité au rebond")
             reb_graph(player,season_type)
             
-            #st.header("Statistiques de base")
-            #stat_options=['PTS', 'REB', 'AST', 'STL', 'BLK', 'FGM','FGA', 'FG_PCT', 'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',
-            #              'OREB', 'DREB', 'TOV', 'BLKA', 'PF', 'PFD', 'PLUS_MINUS', 'W_PCT',
-            #              'CONTESTED_SHOTS', 'CONTESTED_SHOTS_2PT','CONTESTED_SHOTS_3PT', 'DEFLECTIONS', 'CHARGES_DRAWN',
-            #              'SCREEN_ASSISTS','SCREEN_AST_PTS', 'OFF_LOOSE_BALLS_RECOVERED','DEF_LOOSE_BALLS_RECOVERED',
-            #              'LOOSE_BALLS_RECOVERED','PCT_LOOSE_BALLS_RECOVERED_OFF', 'PCT_LOOSE_BALLS_RECOVERED_DEF',
-            #              'OFF_BOXOUTS', 'DEF_BOXOUTS', 'BOX_OUTS', 'BOX_OUT_PLAYER_TEAM_REBS','BOX_OUT_PLAYER_REBS',
-            #              'PCT_BOX_OUTS_OFF', 'PCT_BOX_OUTS_DEF','PCT_BOX_OUTS_TEAM_REB', 'PCT_BOX_OUTS_REB']
-            #stat_choice = st.selectbox('Rubrique statistique', stat_options)
-            #custom_graph(player,season_type,stat_choice)
+            # custom graph with stat selection
+            st.header("Statistiques de base")
+            stat_options=['PTS', 'REB', 'AST', 'STL', 'BLK', 'FGM','FGA', 'FG_PCT', 'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',
+                          'OREB', 'DREB', 'TOV', 'BLKA', 'PF', 'PFD', 'PLUS_MINUS', 'W_PCT',
+                          'CONTESTED_SHOTS', 'CONTESTED_SHOTS_2PT','CONTESTED_SHOTS_3PT', 'DEFLECTIONS', 'CHARGES_DRAWN',
+                          'SCREEN_ASSISTS','SCREEN_AST_PTS', 'OFF_LOOSE_BALLS_RECOVERED','DEF_LOOSE_BALLS_RECOVERED',
+                          'LOOSE_BALLS_RECOVERED','PCT_LOOSE_BALLS_RECOVERED_OFF', 'PCT_LOOSE_BALLS_RECOVERED_DEF',
+                          'OFF_BOXOUTS', 'DEF_BOXOUTS', 'BOX_OUTS', 'BOX_OUT_PLAYER_TEAM_REBS','BOX_OUT_PLAYER_REBS',
+                          'PCT_BOX_OUTS_OFF', 'PCT_BOX_OUTS_DEF','PCT_BOX_OUTS_TEAM_REB', 'PCT_BOX_OUTS_REB']
+            stat_choice = st.selectbox('Rubrique statistique', stat_options)
+            custom_graph(player,season_type,stat_choice)
 
-        #except TypeError:
-        #    st.error(f"{player} n'a pas joué en {season_type} en 2023-2024.")
+        except TypeError:
+            st.error(f"{player} n'a pas joué en {season_type} en 2023-2024.")
 
         

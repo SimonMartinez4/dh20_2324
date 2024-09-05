@@ -1,6 +1,7 @@
 ## Import packages
 
 import streamlit as st
+import sqlite3
 
 # NBA api endpoints
 from nba_api.stats.endpoints import leaguedashplayerstats
@@ -28,66 +29,56 @@ pd.set_option('display.max_rows', None)
 true_data=pd.read_excel('./src/data_dh20.xlsx', sheet_name='Réponses individuelles')
 ids=pd.read_excel('./src/dh20_ids.xlsx',sheet_name='Feuil1')
 
-#Fonction du graphique de votes
+# func to draw a dh20 vote graph
 def vote_graph(player):
 
     joueur = player
     true_data_f = load_transform_data(true_data)
     df_joueur = true_data_f[[joueur, 'Editorial_Member']].dropna()
 
-    # Calculer la moyenne globale des notes
     moyenne_globale = df_joueur[joueur].mean()
 
-    # Séparer les membres de la rédaction et les autres
     df_editorial = df_joueur[df_joueur['Editorial_Member']]
     df_non_editorial = df_joueur[~df_joueur['Editorial_Member']]
 
-    # Créer une figure et des axes
     fig, ax = plt.subplots(figsize=(12, 8))
 
-    fig.patch.set_alpha(0.0)  # Rendre le fond de la figure transparent
-    ax.set_facecolor('none')  # Rendre le fond des axes transparent
+    fig.patch.set_alpha(0.0)
+    ax.set_facecolor('none')
 
-    # Créer un violon plot en excluant les membres de la rédaction
+    # violin with community votes only
     sns.violinplot(x='Editorial_Member', y=joueur, data=df_non_editorial, inner='quartile', color='skyblue', ax=ax, label="Communauté DH")
 
-    # Ajouter un swarm plot pour les membres de la rédaction
+    # Option to add a swarplot with editorial members votes
     #sns.swarmplot(x='Editorial_Member', y=joueur, data=df_editorial, color='blue', ax=ax, label='Rédaction DH')
 
-    # Ajouter une ligne pour la moyenne globale
+    # avg red line
     ax.axhline(y=moyenne_globale, color='red', linestyle='--', label='Moyenne Globale')
 
-    # Inverser l'axe y
     ax.invert_yaxis()
 
-    # Dictionnaire des labels
+    # labels dict
     labels = {i: str(i) for i in range(1, 22)}
     labels[22] = "Non classé"
 
-    # Remplacer les valeurs numériques par des étiquettes textuelles sur l'axe y
     ax.set_yticks(list(range(1, 23)))
     ax.set_yticklabels([labels.get(i, i) for i in range(1, 23)])
 
-    # Ajuster les limites de l'axe y
-    ax.set_ylim(22.5, 0.5)  # Ajuster les limites pour correspondre à l'inversion de l'axe
+    # axes limits
+    ax.set_ylim(22.5, 0.5)
     ax.set_xlim(-1, 1)
 
-    # Retirer les labels et les ticks de l'axe x
-    ax.set_xlabel('')  # Retirer le label de l'axe x
-    ax.set_xticks([])   # Retirer les ticks de l'axe x
+    # remove ticks and labels
+    ax.set_xlabel('')
+    ax.set_xticks([])
 
-    # Ajouter un titre et des labels
     ax.set_title(f'Répartition des notes : {joueur}')
     ax.set_ylabel('Note')
 
-    # Ajouter une légende manuelle
     handles, labels = ax.get_legend_handles_labels()
-    # Ajouter le handle du violin plot
-    #handles.append(plt.Line2D([0], [0], color='lightgray', lw=4))
 
     ax.legend(handles=handles, labels=labels)
 
-    # Afficher le plot
     st.pyplot(fig)
 
 ## Function to get team id from the abbreviation
@@ -95,7 +86,7 @@ def get_player_id(name) :
     player_id=ids[ids["player_nickname"]==name].reset_index()["player_id"][0]
     return player_id
 
-# Fonction de chargement et transformation des données
+# func to tranform and load votes data
 def load_transform_data(true_data):
     pd.set_option('future.no_silent_downcasting', True)
     true_data_c=true_data.iloc[0:208, 1:-3]
@@ -116,7 +107,7 @@ def load_transform_data(true_data):
     true_data_f["CHET"]=true_data_f["CHET"].astype(int)
     return true_data_f
 
-def advanced(season_type):
+def advanced_d(season_type):
         player_json = leaguedashplayerstats.LeagueDashPlayerStats(
                 measure_type_detailed_defense = "Advanced",
                 per_mode_detailed = "PerGame",
@@ -132,7 +123,28 @@ def advanced(season_type):
         a_data = data[['PLAYER_ID','PLAYER_NAME','GP','MIN','TS_PCT','USG_PCT','AST_RATIO','PIE',]]
         return a_data
 
-def scoring(season_type):
+# func to extract advanced stats from db
+def advanced(season_type, db_path='.\src\dh20_stats.db'):
+    conn = sqlite3.connect(db_path)
+    
+    try:
+        suff= "reg" if season_type== "Regular Season" else "po"
+        query = f"""
+        SELECT PLAYER_ID, PLAYER_NAME, GP, MIN, TS_PCT, USG_PCT, AST_RATIO, PIE
+        FROM adv_stats_{suff}
+        """
+        data = pd.read_sql_query(query, conn)
+        
+        return data
+    
+    except Exception as e:
+        st.write(f"Erreur lors de l'extraction des données : {e}")
+        return None
+    
+    finally:
+        conn.close()
+
+def scoring_d(season_type):
         player_json = leaguedashplayerstats.LeagueDashPlayerStats(
                 measure_type_detailed_defense = "Scoring",
                 per_mode_detailed = "PerGame",
@@ -148,7 +160,28 @@ def scoring(season_type):
         s_data=data[['PLAYER_ID','PCT_AST_FGM']]
         return s_data
 
-def shotdef(season_type):
+# func to extract scoring stats from db
+def scoring(season_type, db_path='.\src\dh20_stats.db'):
+    conn = sqlite3.connect(db_path)
+    
+    try:
+        suff= "reg" if season_type== "Regular Season" else "po"
+        query = f"""
+        SELECT PLAYER_ID, PCT_AST_FGM
+        FROM scor_stats_{suff}
+        """
+        data = pd.read_sql_query(query, conn)
+        
+        return data
+    
+    except Exception as e:
+        st.write(f"Erreur lors de l'extraction des données : {e}")
+        return None
+    
+    finally:
+        conn.close()
+
+def shotdef_d(season_type):
         player_json = leaguedashptdefend.LeagueDashPtDefend(
                 defense_category = "Overall",
                 league_id = "00",
@@ -166,7 +199,29 @@ def shotdef(season_type):
         d_data=d_data.rename(columns={'CLOSE_DEF_PERSON_ID':"PLAYER_ID"})
         return d_data
 
-def reb(season_type):
+# func to extract shot defensive efficiency stats from db
+def shotdef(season_type, db_path='.\src\dh20_stats.db'):
+    conn = sqlite3.connect(db_path)
+    
+    try:
+        suff= "reg" if season_type== "Regular Season" else "po"
+        query = f"""
+        SELECT CLOSE_DEF_PERSON_ID, PCT_PLUSMINUS
+        FROM shot_def_{suff}
+        """
+        data = pd.read_sql_query(query, conn)
+        data=data.rename(columns={'CLOSE_DEF_PERSON_ID':"PLAYER_ID"})
+        
+        return data
+    
+    except Exception as e:
+        st.write(f"Erreur lors de l'extraction des données : {e}")
+        return None
+    
+    finally:
+        conn.close()
+
+def reb_d(season_type):
         player_json = leaguedashptstats.LeagueDashPtStats(
                 player_or_team = "Player",
                 pt_measure_type = "Rebounding",
@@ -183,6 +238,28 @@ def reb(season_type):
         r_data=data[['PLAYER_ID','REB_CHANCE_PCT_ADJ']]
         return r_data
 
+# func to extract rebound stats from db
+def reb(season_type, db_path='.\src\dh20_stats.db'):
+    conn = sqlite3.connect(db_path)
+    
+    try:
+        suff= "reg" if season_type== "Regular Season" else "po"
+        query = f"""
+        SELECT PLAYER_ID, REB_CHANCE_PCT_ADJ
+        FROM reb_{suff}
+        """
+        data = pd.read_sql_query(query, conn)
+        
+        return data
+    
+    except Exception as e:
+        st.write(f"Erreur lors de l'extraction des données : {e}")
+        return None
+    
+    finally:
+        conn.close()
+
+# func to agregate advanced key stats
 def keystats(season_type):
     dh20_p=ids.loc[ids["dh20"]==1,["player_id","po"]]
     dh20_p=dh20_p.rename(columns={"player_id":"PLAYER_ID"})
@@ -211,6 +288,7 @@ def keystats(season_type):
     keystats = pd.concat([keystats, df_rank, df_rankd], axis=1)
     return keystats
 
+# func to draw a general polar graph
 def polar(player, season_type):
     
     player_id=get_player_id(player)
@@ -266,7 +344,7 @@ def pie(player, season_type):
         rankpie=round(df_player.loc[0,"Rank PIE"],0)
         return pie, rankpie
     else:
-        return st.write(f"{player} didn't play any {season_type} game in 2023-24")
+        return st.write(f"")
 
 
 def eff_graph(player,season_type):
@@ -286,7 +364,6 @@ def eff_graph(player,season_type):
                             ),
                         hoverinfo='text',
                         mode='markers'
-                        #text='PLAYER_NAME',
         ))
 
         fig.add_trace(go.Scatter(
@@ -311,24 +388,19 @@ def eff_graph(player,season_type):
 
         fig.update_xaxes(
             title="Usage Percentage (USG%)",
-            showgrid=True,  # Afficher la grille
-            gridcolor='black',  # Couleur de la grille en noir
-            titlefont=dict(color='black'),  # Titre de l'axe en noir
-            tickfont=dict(color='black')  # Étiquettes de l'axe en noir
+            showgrid=True,
+            gridcolor='black',
+            titlefont=dict(color='black'),
+            tickfont=dict(color='black')
             )
 
         fig.update_yaxes(
             title="True Shooting Percentage (TS%)",
-            showgrid=True,  # Afficher la grille
-            gridcolor='black',  # Couleur de la grille en noir
-            titlefont=dict(color='black'),  # Titre de l'axe en noir
-            tickfont=dict(color='black')  # Étiquettes de l'axe en noir
+            showgrid=True,
+            gridcolor='black',
+            titlefont=dict(color='black'),
+            tickfont=dict(color='black')
             )
-
-        # Affichage des noms des joueurs sur les points du scatterplot
-        fig.update_traces(
-            #title='Scatterplot of TS% vs USG% for Players',
-        )
 
         fig.update_layout(
             template='plotly_dark',
@@ -340,6 +412,7 @@ def eff_graph(player,season_type):
     else :
         return st.write(f"{player} didn't play any {season_type} game in 2023-24")
 
+# func to draw assists ratio graph
 def ast_graph(player,season_type):
     player_id=get_player_id(player)
     data=keystats(season_type)
@@ -357,7 +430,6 @@ def ast_graph(player,season_type):
                             ),
                         hoverinfo='text',
                         mode='markers'
-                        #text='PLAYER_NAME',
         ))
 
         fig.add_trace(go.Scatter(
@@ -384,24 +456,19 @@ def ast_graph(player,season_type):
 
         fig.update_xaxes(
             title="Usage Percentage (USG%)",
-            showgrid=True,  # Afficher la grille
-            gridcolor='black',  # Couleur de la grille en noir
-            titlefont=dict(color='black'),  # Titre de l'axe en noir
-            tickfont=dict(color='black')  # Étiquettes de l'axe en noir
+            showgrid=True,
+            gridcolor='black',
+            titlefont=dict(color='black'),
+            tickfont=dict(color='black')
             )
 
         fig.update_yaxes(
             title="Assists Ratio",
-            showgrid=True,  # Afficher la grille
-            gridcolor='black',  # Couleur de la grille en noir
-            titlefont=dict(color='black'),  # Titre de l'axe en noir
-            tickfont=dict(color='black')  # Étiquettes de l'axe en noir
+            showgrid=True,
+            gridcolor='black',
+            titlefont=dict(color='black'),
+            tickfont=dict(color='black')
             )
-
-        # Affichage des noms des joueurs sur les points du scatterplot
-        fig.update_traces(
-            #title='Scatterplot of TS% vs USG% for Players',
-        )
 
         fig.update_layout(
             template='plotly_dark',
@@ -413,6 +480,7 @@ def ast_graph(player,season_type):
     else :
         return st.write(f"{player} didn't play any {season_type} game in 2023-24")
 
+# func to draw a shot defensive efficiency graph
 def ddiff_graph(player, season_type):
     
     df=keystats(season_type)
@@ -462,7 +530,8 @@ def ddiff_graph(player, season_type):
     
     else:
         return st.write(f"{player} didn't play any playoffs game in 2023-24")
-    
+
+# func to draw a rebound graph    
 def reb_graph(player, season_type):
     df=keystats(season_type)
     df=df.sort_values(by='Adjusted Rebound Chance %', ascending=True)
@@ -518,7 +587,7 @@ def reb_graph(player, season_type):
     else :
         return st.write(f"{player} didn't play any playoffs game in 2023-24")
 
-def base(season_type):
+def base_d(season_type):
     player_json = leaguedashplayerstats.LeagueDashPlayerStats(
             per_mode_detailed = "PerGame",
             season = "2023-24",
@@ -533,7 +602,29 @@ def base(season_type):
     data=data.iloc[:,:32]
     return data
 
-def hustle(season_type):
+# extracting base stats from db
+def base(season_type, db_path='.\src\dh20_stats.db'):
+    conn = sqlite3.connect(db_path)
+    
+    try:
+        suff= "reg" if season_type== "Regular Season" else "po"
+        query = f"""
+        SELECT *
+        FROM base_stats_{suff}
+        """
+        data = pd.read_sql_query(query, conn)
+        data=data.iloc[:,:32]
+
+        return data
+    
+    except Exception as e:
+        st.write(f"Erreur lors de l'extraction des données : {e}")
+        return None
+    
+    finally:
+        conn.close()
+
+def hustle_d(season_type):
     player_json = leaguehustlestatsplayer.LeagueHustleStatsPlayer(
             per_mode_time = "PerGame",
             season = "2023-24",
@@ -547,6 +638,28 @@ def hustle(season_type):
     data.columns = headers
     return data
 
+# extracting hustle stats from db
+def hustle(season_type, db_path='.\src\dh20_stats.db'):
+    conn = sqlite3.connect(db_path)
+    
+    try:
+        suff= "reg" if season_type== "Regular Season" else "po"
+        query = f"""
+        SELECT *
+        FROM hus_stats_{suff}
+        """
+        data = pd.read_sql_query(query, conn)
+
+        return data
+    
+    except Exception as e:
+        st.write(f"Erreur lors de l'extraction des données : {e}")
+        return None
+    
+    finally:
+        conn.close()
+
+# func merging base stats and hustle stats
 def allstats(season_type):
     dh20_p=ids.loc[ids["dh20"]==1,["player_id","po"]]
     dh20_p=dh20_p.rename(columns={"player_id":"PLAYER_ID"})
@@ -567,6 +680,7 @@ def allstats(season_type):
     stats=stats.rename(columns={'PLAYER_NAME_x':'PLAYER_NAME','MIN_x':'MIN'})
     return stats
 
+# func to draw a custom graph by choosing the stat
 def custom_graph(player,season_type,y):
     
     player_id=get_player_id(player)
