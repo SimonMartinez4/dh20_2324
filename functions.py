@@ -30,13 +30,6 @@ pd.set_option('display.max_rows', None)
 true_data=pd.read_excel('./src/data_dh20.xlsx', sheet_name='Réponses individuelles')
 ids=pd.read_excel('./src/dh20_ids.xlsx',sheet_name='Feuil1')
 
-# Initialize BigQuery client
-client = bigquery.Client(project='dh-20-stats')
-
-google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if google_credentials_path:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_credentials_path
-
 # func to draw a dh20 vote graph
 def vote_graph(player):
 
@@ -115,92 +108,68 @@ def load_transform_data(true_data):
     true_data_f["CHET"]=true_data_f["CHET"].astype(int)
     return true_data_f
 
-# func to extract advanced stats from db
+# func to extract advanced stats from csv
 def advanced(season_type):
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
-    # Define the dataset and table names
-    dataset_id = 'dh_20_stats'
-    table_name = f'adv_stats_{suff}'
-
-    query = f"""
-    SELECT PLAYER_ID, PLAYER_NAME, GP, MIN, TS_PCT, USG_PCT, AST_RATIO, PIE
-    FROM `{dataset_id}.{table_name}`
-    """
+    # Define the file_path
+    file_name = f'src/adv_stats_{suff}.csv'
 
     try:
-        query_job = client.query(query)
-        data = query_job.result().to_dataframe()
+        data = pd.read_csv(file_name)
+        data = data.loc[:,['PLAYER_ID', 'PLAYER_NAME', 'GP', 'MIN', 'TS_PCT', 'USG_PCT', 'AST_RATIO', 'PIE']]
         return data
     
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
 
-# func to extract scoring stats from db
+# func to extract scoring stats from csv
 def scoring(season_type):
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
-    # Define the dataset and table names
-    dataset_id = 'dh_20_stats'
-    table_name = f'scor_stats_{suff}'
-
-    query = f"""
-    SELECT PLAYER_ID, PCT_AST_FGM
-    FROM `{dataset_id}.{table_name}`
-    """
+    # Define the filepath
+    file_name = f'src/scor_stats_{suff}.csv'
 
     try:
-        query_job = client.query(query)
-        data = query_job.result().to_dataframe()
+        data = pd.read_csv(file_name)
+        data = data.loc[:,['PLAYER_ID','PCT_AST_FGM']]
         return data
     
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
 
-# func to extract shot defensive efficiency stats from db
+# func to extract shot defensive efficiency stats from csv
 def shotdef(season_type):
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
-    # Define the dataset and table names
-    dataset_id = 'dh_20_stats'
-    table_name = f'shot_def_{suff}'
-
-    query = f"""
-    SELECT CLOSE_DEF_PERSON_ID, PCT_PLUSMINUS
-    FROM `{dataset_id}.{table_name}`
-    """
+    # Define the filepath
+    file_name = f'src/shot_def_{suff}.csv'
 
     try:
-        query_job = client.query(query)
-        data = query_job.result().to_dataframe()
-        data=data.rename(columns={'CLOSE_DEF_PERSON_ID':"PLAYER_ID"})
+        data = pd.read_csv(file_name)
+        data = data.loc[:,['CLOSE_DEF_PERSON_ID','PCT_PLUSMINUS']]
+        data = data.rename(columns={'CLOSE_DEF_PERSON_ID':"PLAYER_ID"})
         return data
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
 
-# func to extract rebound stats from db
+# func to extract rebound stats from csv
 def reb(season_type):
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
-    # Define the dataset and table names
-    dataset_id = 'dh_20_stats'
-    table_name = f'reb_{suff}'
-
-    query = f"""
-    SELECT PLAYER_ID, REB_CHANCE_PCT_ADJ
-    FROM `{dataset_id}.{table_name}`
-    """
+    # Define the filepath
+    file_name = f'src/reb_{suff}.csv'
 
     try:
-        query_job = client.query(query)
-        data = query_job.result().to_dataframe()
+        data = pd.read_csv(file_name)
+        data = data.loc[:,['PLAYER_ID','REB_CHANCE_PCT_ADJ']]
         return data
 
     except Exception as e:
@@ -535,47 +504,33 @@ def reb_graph(player, season_type):
     else :
         return st.write(f"{player} didn't play any playoffs game in 2023-24")
 
-# extracting base stats from db
+# extracting base stats from csv
 def base(season_type):
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
-    # Define the dataset and table names
-    dataset_id = 'dh_20_stats'
-    table_name = f'base_stats_{suff}'
-
-    query = f"""
-    SELECT *
-    FROM `{dataset_id}.{table_name}`
-    """
+    # Define the filepath
+    file_name = f'src/base_stats_{suff}.csv'
 
     try:
-        query_job = client.query(query)
-        data = query_job.result().to_dataframe()
-        data=data.iloc[:,:32]
+        data = pd.read_csv(file_name)
+        data = data.iloc[:,:32]
         return data
 
     except Exception as e:
         st.write(f"Erreur lors de l'extraction des données : {e}")
         return None
 
-# extracting hustle stats from db
+# extracting hustle stats from csv
 def hustle(season_type):
 
     suff= "reg" if season_type== "Regular Season" else "po"
 
-    # Define the dataset and table names
-    dataset_id = 'dh_20_stats'
-    table_name = f'hus_stats_{suff}'
-
-    query = f"""
-    SELECT *
-    FROM `{dataset_id}.{table_name}`
-    """
+    # Define the filepath
+    file_name = f'src/hus_stats_{suff}.csv'
 
     try:
-        query_job = client.query(query)
-        data = query_job.result().to_dataframe()
+        data = pd.read_csv(file_name)
 
         return data
 
