@@ -1,8 +1,6 @@
 ## Import packages
 
 import streamlit as st
-from google.cloud import bigquery
-import os
 
 # NBA api endpoints
 from nba_api.stats.endpoints import leaguedashplayerstats
@@ -18,7 +16,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # Other packages
-import json
 import pandas as pd
 
 
