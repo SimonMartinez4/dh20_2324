@@ -29,6 +29,8 @@ def run():
         st.session_state.season_type = None
     if 'stat_choice' not in st.session_state:
         st.session_state.stat_choice = None
+    if 'x_stat_choice' not in st.session_state:
+        st.session_state.x_stat_choice = None
 
     st.header("Stats DH20 2023-24")
 
@@ -70,15 +72,22 @@ def run():
             
             # custom graph with stat selection
             st.header("Statistiques de base")
-            stat_options=['PTS', 'REB', 'AST', 'STL', 'BLK', 'FGM','FGA', 'FG_PCT', 'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',
+            stat_options=['PTS', 'REB', 'AST', 'STL', 'BLK', 'FGM', 'FG_PCT', 'FG3M',  'FG3_PCT', 'FTM', 'FT_PCT',
                           'OREB', 'DREB', 'TOV', 'BLKA', 'PF', 'PFD', 'PLUS_MINUS', 'W_PCT',
                           'CONTESTED_SHOTS', 'CONTESTED_SHOTS_2PT','CONTESTED_SHOTS_3PT', 'DEFLECTIONS', 'CHARGES_DRAWN',
                           'SCREEN_ASSISTS','SCREEN_AST_PTS', 'OFF_LOOSE_BALLS_RECOVERED','DEF_LOOSE_BALLS_RECOVERED',
-                          'LOOSE_BALLS_RECOVERED','PCT_LOOSE_BALLS_RECOVERED_OFF', 'PCT_LOOSE_BALLS_RECOVERED_DEF',
-                          'OFF_BOXOUTS', 'DEF_BOXOUTS', 'BOX_OUTS', 'BOX_OUT_PLAYER_TEAM_REBS','BOX_OUT_PLAYER_REBS',
-                          'PCT_BOX_OUTS_OFF', 'PCT_BOX_OUTS_DEF','PCT_BOX_OUTS_TEAM_REB', 'PCT_BOX_OUTS_REB']
-            stat_choice = st.selectbox('Rubrique statistique', stat_options)
-            custom_graph(player,season_type,stat_choice)
+                          'LOOSE_BALLS_RECOVERED',
+                          'OFF_BOXOUTS', 'DEF_BOXOUTS', 'BOX_OUTS',]
+            x_stat_options=['MIN','GP','FGA','FG3A','FTA','PTS', 'REB', 'AST', 'STL', 'BLK', 'FGM', 'FG_PCT', 'FG3M', 'FG3_PCT', 'FTM', 'FT_PCT',
+                          'OREB', 'DREB', 'TOV', 'BLKA', 'PF', 'PFD', 'PLUS_MINUS', 'W_PCT',
+                          'CONTESTED_SHOTS', 'CONTESTED_SHOTS_2PT','CONTESTED_SHOTS_3PT', 'DEFLECTIONS', 'CHARGES_DRAWN',
+                          'SCREEN_ASSISTS','SCREEN_AST_PTS', 'OFF_LOOSE_BALLS_RECOVERED','DEF_LOOSE_BALLS_RECOVERED',
+                          'LOOSE_BALLS_RECOVERED',
+                          'OFF_BOXOUTS', 'DEF_BOXOUTS', 'BOX_OUTS',]
+            
+            stat_choice = st.selectbox('Rubrique statistique ordonnées', stat_options)
+            x_stat_choice = st.selectbox('Rubrique statistique abscisses', x_stat_options)
+            custom_graph(player,season_type,stat_choice,x_stat_choice)
 
         except TypeError:
             st.error(f"{player} n'a pas joué en {season_type} en 2023-2024.")

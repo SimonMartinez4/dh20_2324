@@ -557,7 +557,7 @@ def allstats(season_type):
     return stats
 
 # func to draw a custom graph by choosing the stat
-def custom_graph(player,season_type,y):
+def custom_graph(player,season_type,y,x):
     
     player_id=get_player_id(player)
     data=allstats(season_type)
@@ -568,10 +568,10 @@ def custom_graph(player,season_type,y):
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(
-                        x=data_f['MIN'],
+                        x=data_f[x],
                         y=data_f[y],
-                        hovertext= data_f[['PLAYER_NAME', 'MIN', y]].apply(
-                            lambda row: f'{row["PLAYER_NAME"]} => {y} :{row[y]} - Min : {row["MIN"]}',
+                        hovertext= data_f[['PLAYER_NAME', x, y]].apply(
+                            lambda row: f'{row["PLAYER_NAME"]} => {y} :{row[y]} - {x} : {row[x]}',
                             axis=1
                             ),
                         hoverinfo='text',
@@ -580,7 +580,7 @@ def custom_graph(player,season_type,y):
         ))
 
         fig.add_trace(go.Scatter(
-                        x=data_p['MIN'],
+                        x=data_p[x],
                         y=data_p[y],
                         text=data_p['PLAYER_NAME'],
                         textposition='bottom right',
@@ -588,8 +588,8 @@ def custom_graph(player,season_type,y):
                                     size=18,
                                     color='red'
                                     ),
-                        hovertext= data_p[['PLAYER_NAME', 'MIN', y]].apply(
-                            lambda row: f'{row["PLAYER_NAME"]} => {y} :{row[y]} - Min : {row["MIN"]}',
+                        hovertext= data_p[['PLAYER_NAME', x, y]].apply(
+                            lambda row: f'{row["PLAYER_NAME"]} => {y} :{row[y]} - {x} : {row[x]}',
                             axis=1
                             ),
                         hoverinfo='text',
@@ -602,7 +602,7 @@ def custom_graph(player,season_type,y):
 
 
         fig.update_xaxes(
-            title="Avg Minutes"
+            title=x
             )
 
         fig.update_yaxes(
