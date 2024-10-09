@@ -45,5 +45,15 @@ The first Streamlit page provides the user with the distribution of votes for a 
 
 The second page shows several stat visualizations for the player and his ranking for each stat within the DH20.
 
-For example
+For example, there is a visualization of the efficiency ranking:
+
+![Viz](Lebron_eff_example.png)
+
+## Packages
+
+https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html
+
+https://seaborn.pydata.org/
+
+https://plotly.com/python/graph-objects/
 
