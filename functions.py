@@ -210,6 +210,7 @@ def polar(player, season_type):
     cols=["Rank True Shooting %","Rank Assists Ratio","Rank Adjusted Rebound Chance %","Rank Defensive Diff %"]
     cols_name=["PLAYER_NAME","Rank True Shooting %","Rank Assists Ratio","Rank Adjusted Rebound Chance %","Rank Defensive Diff %"]
     df_player=df.loc[df["PLAYER_ID"]==player_id,cols_name].reset_index()
+    field=df['Rank True Shooting %'].count()
 
     if player_id in df['PLAYER_ID'].values :    
         r_values = df_player.loc[0, cols].values
@@ -232,8 +233,8 @@ def polar(player, season_type):
                 radialaxis=dict(
                     gridcolor="black",
                     visible=True,
-                    range=[20, 1],
-                    tickvals=[20,15,10,5,1],
+                    range=[field, 1],
+                    tickvals=[field,15,10,5,1],
                     tickfont=dict(color="black")
                 ),
                 angularaxis=dict(
